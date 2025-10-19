@@ -6,9 +6,16 @@ import jakarta.servlet.http.*;
 
 public class FrontServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String url = request.getRequestURL().toString();
-        request.setAttribute("url", url);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/index.jsp");
-        dispatcher.forward(request, response);
+        getRessource(request, response);
+    }
+    private void getRessource(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String path = request.getRequestURI().substring(request.getContextPath().length());
+        boolean ressourceExists = getServletContext().getResourceAsStream(path) != null;
+        if (ressourceExists) {
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(path);
+            dispatcher.forward(request, response);
+        } else {
+            response.getWriter().print(path);
+        }
     }
 }
